@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* This positions your name and PRN at the top right */
+        .header {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-family: Arial, sans-serif;
+            line-height: 1.2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <strong>Siddhantstrong><br>
+        PRN: 1206
+    </div>
+
+    <h2>Palindrome Checker</h2>
+    <input type="text" id="userInput" placeholder="Enter a name">
+    <button onclick="checkPalindrome()">Check</button>
+    <p id="result"></p>
+
+    <script>
+        function checkPalindrome() {
+            const input = document.getElementById("userInput").value;
+            // Clean the string: remove non-alphanumeric and lowercase
+            const cleanStr = input.toLowerCase().replace(/[^a-z0-9]/g, '');
+            // Reverse the string
+            const reversedStr = cleanStr.split('').reverse().join('');
+            const resultElement = document.getElementById("result");
+            if (cleanStr !== '' && cleanStr === reversedStr) {
+                resultElement.innerHTML = `- ${(input)} is a palindrome! (Reversed: ${reversedStr})`;
+            } else if (cleanStr === "") {
+                resultElement.innerHTML = "Please enter a value.";
+            } else {
+                resultElement.innerHTML = `- ${(input)} is not a palindrome. (Reversed: ${reversedStr})`;
+            }
+        }
+    </script>
+</body>
+</html>
