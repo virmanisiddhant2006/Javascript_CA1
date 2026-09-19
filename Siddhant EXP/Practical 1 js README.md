@@ -1,4 +1,3 @@
-<title>CSS and JavaScript Demonstration</title>
 <!-- External CSS -->
 <link rel="stylesheet" href="external.css">
 
@@ -32,7 +31,7 @@
 <!-- Internal CSS -->
 <h1 class="internal">Welcome to Internal CSS</h1>
 <h2>Name: Siddhant Virmani</h2>
-<h2>PRN: 24070421206</h2>
+<h2>PRN: 24070421195</h2>
 
 <!-- Inline CSS -->
 <h1 style="color: green;">Welcome to Inline CSS</h1>
