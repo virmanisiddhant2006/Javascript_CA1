@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Text & Email Analyzer</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    padding:15px;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+}
+.container{
+    max-width:1100px;
+    margin:auto;
+}
+h1{
+    color:white;
+    text-align:center;
+    margin:5px 0 15px;
+}
+.main{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+.card{
+    background:white;
+    padding:18px;
+    border-radius:14px;
+    box-shadow:0 6px 20px #0002;
+}
+h2{
+    margin:0 0 12px;
+    font-size:20px;
+    color:#333;
+}
+textarea{
+    width:100%;
+    height:190px;
+    resize:none;
+    padding:12px;
+    border:2px solid #ddd;
+    border-radius:9px;
+    font-size:14px;
+    outline:none;
+}
+textarea:focus{border-color:#667eea}
+.buttons{
+    display:flex;
+    gap:7px;
+    margin-top:9px;
+}
+button{
+    border:0;
+    padding:9px 13px;
+    border-radius:7px;
+    background:#667eea;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+button:hover{background:#4f5ed0}
+.clear{background:#ef4444}
+.results{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+.box{
+    background:#f4f6ff;
+    padding:10px;
+    border-radius:8px;
+}
+.box span{
+    display:block;
+    color:#666;
+    font-size:12px;
+}
+.box strong{
+    font-size:16px;
+    color:#222;
+}
+.full{grid-column:1/-1}
+.email{
+    color:#4338ca;
+    margin:3px 0;
+    font-size:14px;
+    word-break:break-all;
+}
+.output{
+    height:75px;
+    margin-top:7px;
+}
+.search{
+    display:flex;
+    gap:6px;
+    margin-top:8px;
+}
+.search input{
+    flex:1;
+    padding:9px;
+    border:1px solid #ccc;
+    border-radius:7px;
+}
+@media(max-width:700px){
+    .main{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📝 Text & Email Analyzer</h1>
+
+<div class="main">
+
+<!-- INPUT -->
+<div class="card">
+<h2>📄 Input Text</h2>
+
+<textarea id="text" placeholder="Enter your paragraph here..."></textarea>
+
+<div class="buttons">
+<button onclick="analyze()">Analyze</button>
+<button onclick="swap()">Swap Case</button>
+<button class="clear" onclick="clearAll()">Clear</button>
+</div>
+</div>
+
+
+<!-- ANALYSIS -->
+<div class="card">
+<h2>📊 Analysis</h2>
+
+<div class="results">
+
+<div class="box">
+<span>Text Length</span>
+<strong id="length">0</strong>
+</div>
+
+<div class="box">
+<span>Words</span>
+<strong id="words">0</strong>
+</div>
+
+<div class="box">
+<span>Contains "Welcome"</span>
+<strong id="welcome">No</strong>
+</div>
+
+<div class="box">
+<span>Email Occurrences</span>
+<strong id="emailOcc">0</strong>
+</div>
+
+<div class="box full">
+<span>Emails Found</span>
+<div id="emails">None</div>
+</div>
+
+<div class="box full">
+<span>Valid Email</span>
+<strong id="valid">No</strong>
+</div>
+
+</div>
+
+<div class="search">
+<input id="search" placeholder="Search a word...">
+<button onclick="findWord()">Search</button>
+</div>
+
+<div class="box" style="margin-top:8px">
+<strong id="searchResult">Search result appears here</strong>
+</div>
+
+</div>
+
+
+<!-- STRING FUNCTIONS -->
+<div class="card">
+<h2>🔤 String Functions</h2>
+
+<label>UPPERCASE</label>
+<textarea class="output" id="upper" readonly></textarea>
+
+<label>lowercase</label>
+<textarea class="output" id="lower" readonly></textarea>
+
+</div>
+
+
+<!-- SWAP CASE -->
+<div class="card">
+<h2>🔄 Swap Case</h2>
+
+<textarea class="output" id="swapped" readonly
+placeholder="A → a | a → A"></textarea>
+
+</div>
+
+</div>
+</div>
+
+
+<script>
+
+const emailRegex =
+/[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+/g;
+
+
+// ANALYZE
+function analyze(){
+
+    const text=document.getElementById("text").value;
+
+    if(!text.trim()){
+        alert("Please enter some text.");
+        return;
+    }
+
+    document.getElementById("upper").value=text.toUpperCase();
+    document.getElementById("lower").value=text.toLowerCase();
+
+    document.getElementById("swapped").value=swapText(text);
+
+    document.getElementById("length").textContent=text.length;
+
+    document.getElementById("words").textContent=
+        text.trim().split(/\s+/).length;
+
+    document.getElementById("welcome").textContent=
+        text.toLowerCase().includes("welcome") ? "Yes" : "No";
+
+    const emails=text.match(emailRegex)||[];
+
+    document.getElementById("emailOcc").textContent=emails.length;
+    document.getElementById("valid").textContent=
+        emails.length ? "Yes" : "No";
+
+    document.getElementById("emails").innerHTML=
+        emails.length
+        ? emails.map(e=>`<div class="email">📧 ${e}</div>`).join("")
+        : "None";
+}
+
+
+// SWAP CASE
+function swapText(text){
+
+    let result="";
+
+    for(let c of text){
+
+        if(c.toUpperCase()===c &&
+           c.toLowerCase()!==c){
+
+            result+=c.toLowerCase();
+
+        }else if(
+            c.toLowerCase()===c &&
+            c.toUpperCase()!==c
+        ){
+
+            result+=c.toUpperCase();
+
+        }else{
+
+            result+=c;
+        }
+    }
+
+    return result;
+}
+
+
+function swap(){
+
+    const text=document.getElementById("text").value;
+
+    document.getElementById("swapped").value=
+        swapText(text);
+}
+
+
+// SEARCH
+function findWord(){
+
+    const text=document.getElementById("text").value;
+    const word=document.getElementById("search").value.trim();
+
+    if(!word){
+        document.getElementById("searchResult").textContent=
+            "Enter a word.";
+        return;
+    }
+
+    const matches=
+        text.match(new RegExp(
+            word.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),
+            "gi"
+        )) || [];
+
+    document.getElementById("searchResult").textContent=
+        `"${word}" found ${matches.length} time(s).`;
+}
+
+
+// CLEAR
+function clearAll(){
+
+    document.getElementById("text").value="";
+    document.getElementById("upper").value="";
+    document.getElementById("lower").value="";
+    document.getElementById("swapped").value="";
+    document.getElementById("search").value="";
+
+    document.getElementById("length").textContent="0";
+    document.getElementById("words").textContent="0";
+    document.getElementById("welcome").textContent="No";
+    document.getElementById("emailOcc").textContent="0";
+    document.getElementById("valid").textContent="No";
+    document.getElementById("emails").textContent="None";
+
+    document.getElementById("searchResult").textContent=
+        "Search result appears here";
+}
+
+</script>
+
+</body>
+</html>
