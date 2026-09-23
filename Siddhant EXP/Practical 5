@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Discount Calculator for Stationery Shop</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 24px;
+    color: #333;
+  }
+  label {
+    margin-right: 8px;
+  }
+  input {
+    width: 130px;
+    padding: 6px;
+    margin-right: 8px;
+  }
+  button {
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+  .results {
+    margin-top: 18px;
+    max-width: 400px;
+  }
+  .summary-card {
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 6px;
+    background: #fafafa;
+  }
+  .summary-card p {
+    margin: 6px 0;
+  }
+  .error {
+    color: #c00;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 6px;
+    text-align: left;
+  }
+</style>
+</head>
+<body>
+
+<h2>Stationery Shop Discount Calculator</h2>
+
+<!-- Input for product name -->
+<label for="product">Product:</label>
+<input type="text" id="product" placeholder="Product name" />
+
+<!-- Input for product price -->
+<label for="price">Price:</label>
+<input type="number" id="price" placeholder="Price" />
+
+<button onclick="addProduct()">Add Product</button>
+
+<!-- List of added products -->
+<h3>Products:</h3>
+<table id="productList">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Price</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Products will appear here -->
+  </tbody>
+</table>
+
+<!-- Button to calculate discount -->
+<button onclick="calculateTotal()">Calculate Total & Discount</button>
+
+<div class="results" id="results"></div>
+
+<script>
+  const products = [];
+
+  function addProduct() {
+    const productInput = document.getElementById('product');
+    const priceInput = document.getElementById('price');
+
+    const productName = productInput.value.trim();
+    const productPrice = parseFloat(priceInput.value);
+
+    if (!productName) {
+      alert('Please enter a product name.');
+      return;
+    }
+    if (isNaN(productPrice) || productPrice <= 0) {
+      alert('Please enter a valid positive price.');
+      return;
+    }
+
+    products.push({ name: productName, price: productPrice });
+    updateProductList();
+
+    // Clear inputs
+    productInput.value = '';
+    priceInput.value = '';
+  }
+
+  function updateProductList() {
+    const tbody = document.getElementById('productList').getElementsByTagName('tbody')[0];
+    tbody.innerHTML = '';
+
+    products.forEach((prod, index) => {
+      const row = tbody.insertRow();
+      row.insertCell(0).innerText = prod.name;
+      row.insertCell(1).innerText = prod.price.toFixed(2);
+      const actionCell = row.insertCell(2);
+      const deleteBtn = document.createElement('button');
+      deleteBtn.innerText = 'Remove';
+      deleteBtn.onclick = () => {
+        products.splice(index, 1);
+        updateProductList();
+      };
+      actionCell.appendChild(deleteBtn);
+    });
+  }
+
+  function getAutoDiscount(amount) {
+    if (amount >= 2000) return 30;
+    if (amount >= 1000) return 20;
+    return 0;
+  }
+
+  function calculateTotal() {
+    const resultsDiv = document.getElementById('results');
+
+    if (products.length === 0) {
+      resultsDiv.innerHTML = "<p class='error'>Please add some products first.</p>";
+      return;
+    }
+
+    const totalAmount = products.reduce((sum, prod) => sum + prod.price, 0);
+    const discountPercentage = getAutoDiscount(totalAmount);
+    const discountAmount = (totalAmount * discountPercentage) / 100;
+    const finalAmount = totalAmount - discountAmount;
+
+    resultsDiv.innerHTML = `
+      <div class="summary-card">
+        <h3>Order Summary</h3>
+        <p>Total products: ${products.length}</p>
+        <p>Total amount: ${totalAmount.toFixed(2)}</p>
+        <p>Discount applied: <strong>${discountPercentage}%</strong></p>
+        <p>Discount amount: ${discountAmount.toFixed(2)}</p>
+        <p><strong>Final amount after discount: ${finalAmount.toFixed(2)}</strong></p>
+      </div>
+    `;
+  }
+</script>
+
+</body>
+</html>
