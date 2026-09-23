@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Array Operations with User Input</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+            color: #555;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        input[type=number] {
+            width: 80px;
+            padding: 6px;
+            margin-right: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 8px 12px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #arrayState, #sliceResult {
+            background-color: #eef;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+        #sliceResult {
+            background-color: #ffe;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Array Operations with User Input</h1>
+    <p>Initial Array: <span id="initialArrayDisplay">[10, 20, 30, 40, 50]</span></p>
+
+    <!-- Array state display -->
+    <h2>Array State & Results</h2>
+    <div id="arrayState"></div>
+
+    <!-- Push -->
+    <div class="section">
+        <h3>Push</h3>
+        <input type="number" id="pushInput" placeholder="Value to push" />
+        <button onclick="pushElement()">Push</button>
+    </div>
+
+    <!-- Unshift -->
+    <div class="section">
+        <h3>Unshift</h3>
+        <input type="number" id="unshiftInput" placeholder="Value to unshift" />
+        <button onclick="unshiftElement()">Unshift</button>
+    </div>
+
+    <!-- Pop -->
+    <div class="section">
+        <h3>Pop</h3>
+        <button onclick="popElement()">Pop</button>
+    </div>
+
+    <!-- Shift -->
+    <div class="section">
+        <h3>Shift</h3>
+        <button onclick="shiftElement()">Shift</button>
+    </div>
+
+    <!-- Slice -->
+    <div class="section">
+        <h3>Slice</h3>
+        <input type="number" id="sliceStart" placeholder="Start index" />
+        <input type="number" id="sliceEnd" placeholder="End index" />
+        <button onclick="sliceArray()">Slice</button>
+    </div>
+
+    <!-- Splice -->
+    <div class="section">
+        <h3>Splice</h3>
+        <input type="number" id="spliceStart" placeholder="Start index" />
+        <input type="number" id="spliceDeleteCount" placeholder="Delete Count" />
+        <input type="text" id="spliceItems" placeholder="Items to add (comma-separated)" />
+        <button onclick="spliceArray()">Splice</button>
+    </div>
+
+    <!-- Slice Result -->
+    <h2>Slice Result</h2>
+    <div id="sliceResult"></div>
+</div>
+
+<script>
+    // Initialize array
+    let arr = [10, 20, 30, 40, 50];
+
+    // Function to update display
+    function updateDisplay() {
+        document.getElementById('arrayState').innerText = 'Current Array: ' + JSON.stringify(arr);
+    }
+
+    // Initial display
+    updateDisplay();
+
+    // Push operation
+    function pushElement() {
+        const val = document.getElementById('pushInput').value;
+        if (val !== '') {
+            arr.push(Number(val));
+            updateDisplay();
+        }
+    }
+
+    // Unshift operation
+    function unshiftElement() {
+        const val = document.getElementById('unshiftInput').value;
+        if (val !== '') {
+            arr.unshift(Number(val));
+            updateDisplay();
+        }
+    }
+
+    // Pop operation
+    function popElement() {
+        arr.pop();
+        updateDisplay();
+    }
+
+    // Shift operation
+    function shiftElement() {
+        arr.shift();
+        updateDisplay();
+    }
+
+    // Slice operation
+    function sliceArray() {
+        const start = parseInt(document.getElementById('sliceStart').value);
+        const end = parseInt(document.getElementById('sliceEnd').value);
+        if (!isNaN(start) && !isNaN(end)) {
+            const slicedArr = arr.slice(start, end);
+            document.getElementById('sliceResult').innerText = 'Sliced Array: ' + JSON.stringify(slicedArr);
+        }
+    }
+
+    // Splice operation
+    function spliceArray() {
+        const startIdx = parseInt(document.getElementById('spliceStart').value);
+        const deleteCount = parseInt(document.getElementById('spliceDeleteCount').value);
+        const itemsToAddStr = document.getElementById('spliceItems').value;
+        if (!isNaN(startIdx) && !isNaN(deleteCount)) {
+            const itemsToAdd = itemsToAddStr
+                .split(',')
+                .map(item => item.trim())
+                .filter(item => item !== '')
+                .map(Number);
+            arr.splice(startIdx, deleteCount, ...itemsToAdd);
+            updateDisplay();
+            document.getElementById('sliceResult').innerText = 'Array after splice: ' + JSON.stringify(arr);
+        }
+    }
+</script>
+</body>
+</html>
