@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Student JSON Data Table</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: auto;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            margin-top: 0;
+            text-align: center;
+            color: #1e293b;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        #fetchButton {
+            background: #2563eb;
+        }
+
+        #jqueryButton {
+            background: #16a34a;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        #message {
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #16a34a;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px;
+            border: 1px solid #d1d5db;
+            text-align: left;
+        }
+
+        th {
+            background: #2563eb;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        tr:hover {
+            background: #e0f2fe;
+        }
+
+        @media screen and (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Student JSON Data</h1>
+
+        <div class="buttons">
+            <button id="fetchButton">
+                Load Using fetch()
+            </button>
+
+            <button id="jqueryButton">
+                Load Using $.getJSON()
+            </button>
+        </div>
+
+        <div id="message">
+            Click a button to load the data
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>PRN</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="3">
+                            No data loaded yet
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script>
+        /*
+         * Sample JSON data for students
+         */
+        const studentData = [
+            {
+                prn: "1195",
+                name: "Om Shendre ",
+                email: "om@gmail.com"
+            },
+            {
+                prn: "1193",
+                name: "kanak Sawarkar",
+                email: "kanak@gmail.com"
+            },
+            {
+                prn: "1208",
+                name: "Arnav wandile",
+                email: "arnav@gmail.com"
+            },
+            {
+                prn: "1181",
+                name: "preetish notwani",
+                email: "preetish@gmail.com"
+            },
+            {
+                prn: "1206",
+                name: "siddhant virmani",
+                email: "siddhant@gmail.com"
+            }
+        ];
+
+        /*
+         * Convert the JSON data into a temporary JSON file URL.
+         */
+        const jsonBlob = new Blob(
+            [JSON.stringify(studentData)],
+            {
+                type: "application/json"
+            }
+        );
+
+        const jsonFileUrl = URL.createObjectURL(jsonBlob);
+
+        const tableBody = document.getElementById("tableBody");
+        const message = document.getElementById("message");
+
+        /*
+         * Render JSON data inside the table
+         */
+        function renderTable(data) {
+            tableBody.innerHTML = "";
+
+            if (data.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3">No data found</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            data.forEach(function(student) {
+                const tableRow = document.createElement("tr");
+                tableRow.innerHTML = `
+                    <td>${student.prn}</td>
+                    <td>${student.name}</td>
+                    <td>${student.email}</td>
+                `;
+                tableBody.appendChild(tableRow);
+            });
+        }
+
+        /*
+         * Display a loading message
+         */
+        function showLoading(messageText) {
+            message.textContent = messageText;
+            message.className = "";
+        }
+
+        /*
+         * Load JSON data using fetch()
+         */
+        document
+            .getElementById("fetchButton")
+            .addEventListener("click", function() {
+                showLoading("Loading data using fetch()...");
+
+                fetch(jsonFileUrl)
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error("Unable to load data");
+                        }
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        renderTable(data);
+                        message.textContent =
+                            "Data loaded successfully using fetch()";
+                        message.className = "success";
+                    })
+                    .catch(function(error) {
+                        message.textContent =
+                            "Error: " + error.message;
+                        message.className = "error";
+                    });
+            });
+
+        /*
+         * Load JSON data using jQuery $.getJSON()
+         */
+        $("#jqueryButton").on("click", function() {
+            showLoading("Loading data using $.getJSON()...");
+
+            $.getJSON(jsonFileUrl)
+                .done(function(data) {
+                    renderTable(data);
+                    message.textContent =
+                        "Data loaded successfully using $.getJSON()";
+                    message.className = "success";
+                })
+                .fail(function() {
+                    message.textContent =
+                        "Error: $.getJSON() could not load the data";
+                    message.className = "error";
+                });
+        });
+    </script>
+
+</body>
+</html>
