@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Job Application Form</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f0f0f0; /* Light background for contrast */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  #jobApplicationForm {
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    max-width: 600px;
+    width: 100%;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #555;
+  }
+  label {
+    display: block;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+  input, select {
+    width: 100%;
+    padding: 8px 12px;
+    margin-top: 4px;
+    border-radius: 4px;
+    border: 2px solid #ccc;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus {
+    border-color: #007BFF;
+    outline: none;
+  }
+  span {
+    color: red;
+    font-size: 0.85em;
+    height: 1em;
+    display: block;
+    margin-top: 2px;
+  }
+  #submitBtn {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  #submitBtn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+  /* Optional: hover effects for the button */
+  #submitBtn:hover {
+    background-color: #0056b3;
+  }
+</style>
+</head>
+<body>
+
+<form id="jobApplicationForm">
+    <!-- Personal Information -->
+    <h2>Job Application Form</h2>
+    <h3>Personal Information</h3>
+    <label>Name:
+        <input type="text" id="name" required>
+        <span id="nameError"></span>
+    </label>
+
+    <label>Email:
+        <input type="email" id="email" required>
+        <span id="emailError"></span>
+    </label>
+
+    <label>Phone:
+        <input type="tel" id="phone" required>
+        <span id="phoneError"></span>
+    </label>
+
+    <!-- Educational Qualification -->
+    <h3>Educational Qualification</h3>
+    <label>Highest Degree:
+        <select id="degree" required>
+            <option value="">Select</option>
+            <option value="Bachelors">Bachelors</option>
+            <option value="Masters">Masters</option>
+            <option value="PhD">PhD</option>
+        </select>
+        <span id="degreeError"></span>
+    </label>
+
+    <label>Institution Name:
+        <input type="text" id="institution" required>
+        <span id="institutionError"></span>
+    </label>
+
+    <label>Year of Graduation:
+        <input type="number" id="graduationYear" required>
+        <span id="graduationYearError"></span>
+    </label>
+
+    <!-- Technical Skills -->
+    <h3>Technical Skills</h3>
+    <label>Skills:
+        <input type="text" id="skills" required>
+        <span id="skillsError"></span>
+    </label>
+
+    <label>Proficiency:
+        <select id="proficiency" required>
+            <option value="">Select</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Expert">Expert</option>
+        </select>
+        <span id="proficiencyError"></span>
+    </label>
+
+    <!-- Professional Information -->
+    <h3>Professional Information</h3>
+    <label>Current Employer:
+        <input type="text" id="employer">
+        <span id="employerError"></span>
+    </label>
+
+    <label>Years of Experience:
+        <input type="number" id="experience" required>
+        <span id="experienceError"></span>
+    </label>
+
+    <button type="submit" id="submitBtn" disabled>Submit Application</button>
+</form>
+
+<script>
+  const form = document.getElementById('jobApplicationForm');
+  const submitBtn = document.getElementById('submitBtn');
+
+  const validators = {
+      name: () => /^[A-Za-z\s]+$/.test(document.getElementById('name').value),
+      email: () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('email').value),
+      phone: () => /^\d{10}$/.test(document.getElementById('phone').value),
+      institution: () => document.getElementById('institution').value.trim() !== '',
+      graduationYear: () => {
+          const year = parseInt(document.getElementById('graduationYear').value);
+          const currentYear = new Date().getFullYear();
+          return year >= 1900 && year <= currentYear;
+      },
+      skills: () => document.getElementById('skills').value.trim() !== '',
+      experience: () => {
+          const exp = parseInt(document.getElementById('experience').value);
+          return !isNaN(exp) && exp >= 0;
+      },
+      degree: () => document.getElementById('degree').value !== '',
+      proficiency: () => document.getElementById('proficiency').value !== ''
+  };
+
+  function validateField(id, validator, errorId) {
+      const value = document.getElementById(id).value.trim();
+      const isValid = validator();
+      const errorSpan = document.getElementById(errorId);
+      if (!isValid) {
+          errorSpan.textContent = 'Invalid or required.';
+      } else {
+          errorSpan.textContent = '';
+      }
+      return isValid;
+  }
+
+  function validateForm() {
+      const validName = validateField('name', validators.name, 'nameError');
+      const validEmail = validateField('email', validators.email, 'emailError');
+      const validPhone = validateField('phone', validators.phone, 'phoneError');
+      const validInstitution = validateField('institution', validators.institution, 'institutionError');
+      const validYear = validateField('graduationYear', validators.graduationYear, 'graduationYearError');
+      const validSkills = validateField('skills', validators.skills, 'skillsError');
+      const validExperience = validateField('experience', validators.experience, 'experienceError');
+      const validDegree = validateField('degree', validators.degree, 'degreeError');
+      const validProficiency = validateField('proficiency', validators.proficiency, 'proficiencyError');
+
+      const allValid = validName && validEmail && validPhone && validInstitution &&
+                       validYear && validSkills && validExperience && validDegree && validProficiency;
+
+      submitBtn.disabled = !allValid;
+  }
+
+  // Add event listeners for real-time validation
+  document.querySelectorAll('#jobApplicationForm input, #jobApplicationForm select').forEach(elem => {
+      elem.addEventListener('input', validateForm);
+  });
+
+  form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      validateForm();
+      if (!submitBtn.disabled) {
+          alert('Application submitted successfully!');
+          form.reset();
+          submitBtn.disabled = true;
+          // Clear error messages
+          document.querySelectorAll('span').forEach(span => span.textContent = '');
+      }
+  });
+</script>
+
+</body>
+</html>
